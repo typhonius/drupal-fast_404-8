@@ -1,0 +1,4 @@
+name=Fast 404
+description=Speed up the generation of 404 pages with this module. Route 404 display to a static page.
+core=6.x
+version=6.x-1.0
