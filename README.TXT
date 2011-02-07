@@ -1,7 +1,75 @@
 
-OMG! Fast_404 is Super Fast and Super Amazing. It is also very aggressive and hard-core.
+Fast_404 is Super Fast and Super Amazing. It is also very aggressive and hard-core.
+BE CAREFUL! TEST YOUR SITE THOROUGHLY AFTER ENABLING!
 
-The code below needs to go into your settings.php. Read the comments carefully before enabling any non-default behavior.
+
+INSTALLATION INSTRUCTIONS
+
+Basic Install *NOTE, THIS ONLY CHECKS STATIC FILES AND NOT DRUPAL PATHS*
+(no settings.php modifications needed)
+Step 1. Upload the module to your standard modules location (usually sites/all/modules).
+Step 2. Enable the module in your modules page
+
+Advanced Install
+Step 1. Upload the module to your standard modules location (usually sites/all/modules).
+Step 2. Place the code at the bottom of this file into your settings.php file
+Step 3. Optionally, modify the include_once path if you did not put the module in sites/all/modules
+Step 4. Enable the module in your modules page
+
+-- Getting Extra Speed out of the Advanced Install --
+
+#1) Check extensions from settings.php, not hook_boot.
+
+  This method is faster as it checks for missing static files at bootstrap stage
+  3 rather than 7 when the module's hook_boot() is called. Also, if you are
+  using aggressive or external caching, hook_boot is skipped, so you will *need*
+  to do this.
+
+  To enable this functionality, uncomment the line below near the bottom of the
+  settings.php code:
+
+  //fast_404_ext_check();
+
+#2) Enable Drupal path checking
+
+  This checks to see if the URL you being visited actually corresponds to a real
+  page in Drupal. This feature has 2 switches:
+
+    a). Global switch to turn this checking on and off:
+        $conf['fast_404_path_check'] = FALSE;
+
+    b). To perform this check in settings.php for the same reasons as listed
+        above for the static file checking uncomment the following line in the
+        settings.php code:
+        //fast_404_path_check();
+
+#3) Give the static file checking a kick in the pants!
+
+  Static file checking does require you to keep an eye on the extension list
+  as well as a bit of extra work with the preg_match (OK, a very small amount).
+  Optionally, you can use whitelisting rather than blacklisting. To turn this on
+  alter this setting in the settings.php:
+  $conf['fast_404_url_whitelisting'] = FALSE;
+
+  This setting requires you to do some serious testing to ensure your site's
+  pages are all still loading. Also make sure this list is accurate for your
+  site:
+
+  $conf['fast_404_whitelist']  = array('index.php', 'rss.xml', 'install.php', 'cron.php', 'update.php', 'xmlrpc.php');
+
+#4) Disallow imagecache file creation for anonymous users (NEW!)
+
+  Normally the module skips out if imagecache is in the URL to the static file.
+  There are times when you may not want this (it would be pretty easy for someone
+  to take down your site by simply hammering you with URLs with imagecache in them.
+
+  In an ideal situation, your logged in users should have verified the pages are
+  loading correctly when they create them, so any needed imagecache images are
+  already made. This new setting will make it so that imagecache URLs are not
+  excluded and fall under the same static file rules as non-imagecache URLs. Set
+  to false to enable this new feature.
+
+  $conf['fast_404_allow_anon_imagecache'] = TRUE;
 
 
 --- Copy the code below into the BOTTOM of your settings.php, unless you are using cacherouter. Put this above cacherouter ---
@@ -25,6 +93,11 @@ include_once('./sites/all/modules/fast_404/fast_404.inc');
 # Disallowed extensions. Any extension in here will not be served by Drupal and will get a fast 404
 # Default extension list, this is considered safe and is even in queue for Drupal 8 (see: http://drupal.org/node/76824)
 $conf['fast_404_exts'] = '/.(txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp)$/i';
+
+# Allow anonymous users to hit URLs containing 'imagecache' even if the file does not exist.
+# TRUE is default behavior. If you know all imagecache variations are already made
+# set this to FALSE.
+$conf['fast_404_allow_anon_imagecache'] = TRUE;
 
 # Extension list requiring whitelisting to be activated **If you use this without whitelisting enabled your site will not load!
 //$conf['fast_404_exts'] = '/.(txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp|php|html?|xml)$/i';

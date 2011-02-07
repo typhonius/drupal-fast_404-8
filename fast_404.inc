@@ -1,10 +1,34 @@
 <?php
 
   function fast_404_ext_check() {
-    
+
+
     // Check to see if the URL is an imagecache URL. Those are handled via Drupal
     if (strpos($_SERVER['QUERY_STRING'], 'imagecache')) {
-      return TRUE;
+      
+      // Check to see if we will allow anon users to access this page
+      if (!variable_get('fast_404_allow_anon_imagecache',TRUE)) {
+        $found_session = FALSE;
+
+        // At this stage of the game we don't know if the user is logged in via
+        // regular function calls. Simply look for a session cookie. If we find
+        // one we'll assume they're logged in
+        foreach ($_COOKIE as $k => $v) {
+          if (stristr($k,'SESS')) {
+            $found_session = TRUE;
+            break;
+          }
+        }
+
+        // Found a session. We're going to assume they're logged in
+        if ($found_session) {
+          return TRUE;
+        }
+
+      // We're allowing anyone to hit non-existing imagecache URLs (default behavior)
+      } else {
+        return TRUE;
+      }
     }
     
     // If we are using URL whitelisting then determine if the current URL is whitelisted 
@@ -21,7 +45,6 @@
     
     // Determine if URL is in blacklisted extensions
     if ($exts && preg_match($exts, $_SERVER['QUERY_STRING'],$m)) {
-      print_r($m);
       header('HTTP/1.0 404 Not Found');
       $fast_404_html = variable_get('fast_404_html','<html xmlns="http://www.w3.org/1999/xhtml"><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL "@path" was not found on this server.</p></body></html>');
       print strtr($fast_404_html, array('@path' => check_plain(request_uri())));
