@@ -92,7 +92,7 @@ include_once('./sites/all/modules/fast_404/fast_404.inc');
 
 # Disallowed extensions. Any extension in here will not be served by Drupal and will get a fast 404
 # Default extension list, this is considered safe and is even in queue for Drupal 8 (see: http://drupal.org/node/76824)
-$conf['fast_404_exts'] = '/.(txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp)$/i';
+$conf['fast_404_exts'] = '/\.(txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp)$/i';
 
 # Allow anonymous users to hit URLs containing 'imagecache' even if the file does not exist.
 # TRUE is default behavior. If you know all imagecache variations are already made
@@ -100,7 +100,7 @@ $conf['fast_404_exts'] = '/.(txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll
 $conf['fast_404_allow_anon_imagecache'] = TRUE;
 
 # Extension list requiring whitelisting to be activated **If you use this without whitelisting enabled your site will not load!
-//$conf['fast_404_exts'] = '/.(txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp|php|html?|xml)$/i';
+//$conf['fast_404_exts'] = '/\.(txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp|php|html?|xml)$/i';
 
 # Default fast 404 error message.
 $conf['fast_404_html'] = '<html xmlns="http://www.w3.org/1999/xhtml"><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL "@path" was not found on this server.</p></body></html>';
