@@ -82,7 +82,7 @@
     //check if path_redirect module is installed
     if (db_result(db_query("SELECT name FROM {system} WHERE type = 'module' AND status = 1 AND name = 'path_redirect'"))){
       //check if path exits in path_redirect table
-      if (db_result(db_query("SELECT rid FROM {path_redirect} WHERE '%s' LIKE source", $path))) {
+      if (db_result(db_query("SELECT rid FROM {path_redirect} WHERE '%s' LIKE source", $_GET['q']))) {
         return TRUE;
       }
     }
