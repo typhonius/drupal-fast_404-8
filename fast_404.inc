@@ -1,9 +1,22 @@
 <?php
 
 function fast_404_ext_check() {
+  // Work out which $_SERVER variable to work from.  We'll ignore calls to the
+  // homepage, to avoid unnecessary processing.
+  if (!empty($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != '/' && $_SERVER['QUERY_STRING'] != '/index.php') {
+    $server_var = 'QUERY_STRING';
+  }
+  elseif (!empty($_SERVER['REQUEST_URI']) && $_SERVER['REQUEST_URI'] != '/' && $_SERVER['REQUEST_URI'] != '/index.php') {
+    $server_var = 'REQUEST_URI';
+  }
+  // This is the homepage, continue as normal.
+  else {
+    return TRUE;
+  }
+
   // Check to see if the URL is an imagecache URL, those are handled via
   // Drupal.
-  if (strpos($_SERVER['QUERY_STRING'], 'imagecache')) {
+  if (strpos($_SERVER[$server_var], 'imagecache')) {
     
     // Check to see if we will allow anon users to access this page.
     if (!variable_get('fast_404_allow_anon_imagecache', TRUE)) {
@@ -36,7 +49,7 @@ function fast_404_ext_check() {
   // whitelisted before running the extension check.
   if (variable_get('fast_404_url_whitelisting', FALSE)) {
     $allowed = variable_get('fast_404_whitelist', array());
-    if (in_array($_SERVER['QUERY_STRING'], $allowed)) {
+    if (in_array($_SERVER[$server_var], $allowed)) {
       // URL is whitelisted. Assumed good.
       return TRUE;
     } 
@@ -46,7 +59,7 @@ function fast_404_ext_check() {
   $exts = variable_get('fast_404_exts','/\.(txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp|)$/i');
   
   // Determine if URL is in blacklisted extensions.
-  if ($exts && preg_match($exts, $_SERVER['QUERY_STRING'], $m)) {
+  if ($exts && preg_match($exts, $_SERVER[$server_var], $m)) {
     fast_404_error_return();
   }
 
