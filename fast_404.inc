@@ -92,21 +92,21 @@ function fast_404_path_check() {
 
 function fast_404_validate_path_drupal() {
   // Check if path_redirect module is installed.
-  if (db_result(db_query("SELECT name FROM {system} WHERE type = 'module' AND status = 1 AND name = 'path_redirect'"))){
+  if (db_query("SELECT name FROM {system} WHERE type = 'module' AND status = 1 AND name = 'path_redirect'")->fetchField()){
     // Check if path exits in path_redirect table.
-    if (db_result(db_query("SELECT rid FROM {path_redirect} WHERE '%s' LIKE source", $_GET['q']))) {
+    if (db_query("SELECT rid FROM {path_redirect} WHERE '%s' LIKE source", $_GET['q'])->fetchField()) {
       return TRUE;
     }
   }
 
   $sql = "SELECT path FROM {menu_router} WHERE '%s' LIKE CONCAT(path, '%')";
-  $res = db_result(db_query($sql, $_GET['q']));  
+  $res = db_query($sql, $_GET['q'])->fetchField();
   if ($res) {
     return TRUE;
   }
   else {
     $sql = "SELECT pid FROM {url_alias} WHERE '%s' LIKE CONCAT(dst, '%')";
-    $res = db_result(db_query($sql, $_GET['q']));
+    $res = db_query($sql, $_GET['q'])->fetchField();
     return $res == 0 ? FALSE : TRUE;
   }
 
