@@ -17,7 +17,7 @@ function fast_404_ext_check() {
   // Check to see if the URL is an imagecache URL, those are handled via
   // Drupal.
   if (strpos($_SERVER[$server_var], 'imagecache')) {
-    
+
     // Check to see if we will allow anon users to access this page.
     if (!variable_get('fast_404_allow_anon_imagecache', TRUE)) {
       $found_session = FALSE;
@@ -44,7 +44,7 @@ function fast_404_ext_check() {
       return TRUE;
     }
   }
-  
+
   // If we are using URL whitelisting then determine if the current URL is
   // whitelisted before running the extension check.
   if (variable_get('fast_404_url_whitelisting', FALSE)) {
@@ -52,26 +52,26 @@ function fast_404_ext_check() {
     if (in_array($_SERVER[$server_var], $allowed)) {
       // URL is whitelisted. Assumed good.
       return TRUE;
-    } 
+    }
   }
-    
+
   // Load up the blacklisted extensions.
   $exts = variable_get('fast_404_exts','/\.(txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp|)$/i');
-  
+
   // Determine if URL is in blacklisted extensions.
   if ($exts && preg_match($exts, $_SERVER[$server_var], $m)) {
     fast_404_error_return();
   }
 
   define('FAST_404_EXT_CHECKED',TRUE);
-  
+
 }
 
 function fast_404_path_check() {
   $valid = TRUE;
-  
+
   if (variable_get('fast_404_path_check', FALSE) && isset($_GET['q'])) {
-    
+
     // Determine if we have the db_query function. If so, we are in boot and
     // have functions. If not we are in settings.php and do not have functions.
     if (function_exists('db_query')) {
@@ -80,7 +80,7 @@ function fast_404_path_check() {
     else {
       $valid = fast_404_validate_path_mysql();
     }
-    
+
   }
 
   if (!$valid) {
@@ -91,22 +91,23 @@ function fast_404_path_check() {
 }
 
 function fast_404_validate_path_drupal() {
+
   // Check if path_redirect module is installed.
   if (db_query("SELECT name FROM {system} WHERE type = 'module' AND status = 1 AND name = 'path_redirect'")->fetchField()){
     // Check if path exits in path_redirect table.
-    if (db_query("SELECT rid FROM {path_redirect} WHERE '%s' LIKE source", $_GET['q'])->fetchField()) {
+    if (db_query("SELECT rid FROM {path_redirect} WHERE ? LIKE source", array($_GET['q']))->fetchField()) {
       return TRUE;
     }
   }
 
-  $sql = "SELECT path FROM {menu_router} WHERE '%s' LIKE CONCAT(path, '%')";
-  $res = db_query($sql, $_GET['q'])->fetchField();
+  $sql = "SELECT path FROM {menu_router} WHERE ? LIKE CONCAT(path, '%')";
+  $res = db_query($sql, array($_GET['q']))->fetchField();
   if ($res) {
     return TRUE;
   }
   else {
-    $sql = "SELECT pid FROM {url_alias} WHERE '%s' LIKE CONCAT(dst, '%')";
-    $res = db_query($sql, $_GET['q'])->fetchField();
+    $sql = "SELECT pid FROM {url_alias} WHERE ? LIKE CONCAT(alias, '%')";
+    $res = db_query($sql, array($_GET['q']))->fetchField();
     return $res == 0 ? FALSE : TRUE;
   }
 
@@ -114,32 +115,24 @@ function fast_404_validate_path_drupal() {
 }
 
 function fast_404_validate_path_mysql() {
-  global $db_url, $db_prefix;
-  
-  // Unable to work with multiple connections at present.
-  if (is_array($db_url)) {
+  global $databases;
+
+  // Databases aren't set. They need to be set to work.
+  if (!isset($databases) || !is_array($databases['default']['default']) || $databases['default']['default']['driver'] != 'mysql') {
     // We can't check this URL here. Return TRUE to let Drupal continue
     // bootstrapping.
     return TRUE;
   }
-  
+
   $sql = "SELECT path FROM menu_router WHERE '%s' LIKE CONCAT(path, '%')";
-  $sql2 = "SELECT pid FROM url_alias WHERE '%s' LIKE CONCAT(dst, '%')";
+  $sql2 = "SELECT pid FROM url_alias WHERE '%s' LIKE CONCAT(alias, '%')";
   $sql3 = "SELECT rid FROM path_redirect WHERE '%s' LIKE source";
-  
-  $url = parse_url($db_url);
 
-  // Decode url-encoded information in the db connection string.
-  $url['user'] = urldecode($url['user']);
-  // Test if database url has a password.
-  $url['pass'] = isset($url['pass']) ? urldecode($url['pass']) : '';
-  $url['host'] = urldecode($url['host']);
-  $url['path'] = str_replace('/', '', urldecode($url['path']));
+  $db = $databases['default']['default'];
 
-  
   // Query the database via either mysql or mysqli.
-  if (strstr($db_url,'mysqli')) {
-    $conn = mysqli_connect($url['host'], $url['user'], $url['pass'], $url['path'], $url['port']);
+  if ($databases['default']['default']['driver'] == 'mysqli') {
+    $conn = mysqli_connect($db['host'], $db['username'], $db['password'], $db['database'], $db['port']);
 
     // Check if path_redirect module is installed.
     if (mysqli_fetch_row(mysqli_query($conn,"SELECT name FROM system WHERE type = 'module' AND status = 1 AND name = 'path_redirect'"))){
@@ -163,12 +156,12 @@ function fast_404_validate_path_mysql() {
       return TRUE;
     }
   }
-  elseif (strstr($db_url,'mysql')) {
-    if (isset($url['port'])) {
-      $url['host'] = $url['host'].':'.$url['port'];
-    } 
-    $conn = mysql_connect($url['host'], $url['user'], $url['pass']);
-    mysql_select_db($url['path'], $conn);
+  elseif ($databases['default']['default']['driver'] == 'mysql') {
+    if (isset($db['port'])) {
+      $db['host'] = $db['host'].':'.$db['port'];
+    }
+    $conn = mysql_connect($db['host'], $db['username'], $db['password']);
+    mysql_select_db($db['database'], $conn);
 
     // Check if path_redirect module is installed.
     if (mysql_fetch_row(mysql_query($conn,"SELECT name FROM system WHERE type = 'module' AND status = 1 AND name = 'path_redirect'"))){
@@ -197,7 +190,7 @@ function fast_404_validate_path_mysql() {
     // bootstrapping.
     return TRUE;
   }
-  
+
   return TRUE;
 }
 

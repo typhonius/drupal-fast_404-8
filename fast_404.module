@@ -12,7 +12,7 @@
  * delivered before this hook is reached.
  */
 function fast_404_boot() {
-  // Load up the inc file. 
+  // Load up the inc file
   require_once('fast_404.inc');
 
   // If the file extension wasn't set to be checked in settings.php, do it
