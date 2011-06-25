@@ -1,5 +1,5 @@
-
-Fast_404 is Super Fast and Super Amazing. It is also very aggressive and hard-core.
+Fast_404 is Super Fast and Super Amazing. It is also very aggressive and
+hard-core.
 BE CAREFUL! TEST YOUR SITE THOROUGHLY AFTER ENABLING!
 
 
@@ -7,23 +7,26 @@ INSTALLATION INSTRUCTIONS
 
 Basic Install *NOTE, THIS ONLY CHECKS STATIC FILES AND NOT DRUPAL PATHS*
 (no settings.php modifications needed)
-Step 1. Upload the module to your standard modules location (usually sites/all/modules).
+Step 1. Upload the module to your standard modules location (usually
+  sites/all/modules).
 Step 2. Enable the module in your modules page
 
 Advanced Install
-Step 1. Upload the module to your standard modules location (usually sites/all/modules).
+Step 1. Upload the module to your standard modules location (usually
+  sites/all/modules).
 Step 2. Place the code at the bottom of this file into your settings.php file
-Step 3. Optionally, modify the include_once path if you did not put the module in sites/all/modules
+Step 3. Optionally, modify the include_once path if you did not put the module
+  in sites/all/modules
 Step 4. Enable the module in your modules page
 
 -- Getting Extra Speed out of the Advanced Install --
 
 #1) Check extensions from settings.php, not hook_boot.
 
-  This method is faster as it checks for missing static files at bootstrap stage
-  3 rather than 7 when the module's hook_boot() is called. Also, if you are
-  using aggressive or external caching, hook_boot is skipped, so you will *need*
-  to do this.
+  This method is faster as it checks for missing static files at bootstrap
+  stage 3 rather than 7 when the module's hook_boot() is called. Also, if you
+  are using aggressive or external caching, hook_boot is skipped, so you will
+  *need* to do this.
 
   To enable this functionality, uncomment the line below near the bottom of the
   settings.php code:
@@ -32,8 +35,8 @@ Step 4. Enable the module in your modules page
 
 #2) Enable Drupal path checking
 
-  This checks to see if the URL you being visited actually corresponds to a real
-  page in Drupal. This feature has 2 switches:
+  This checks to see if the URL you being visited actually corresponds to a
+  real page in Drupal. This feature has 2 switches:
 
     a). Global switch to turn this checking on and off:
         $conf['fast_404_path_check'] = FALSE;
@@ -47,8 +50,8 @@ Step 4. Enable the module in your modules page
 
   Static file checking does require you to keep an eye on the extension list
   as well as a bit of extra work with the preg_match (OK, a very small amount).
-  Optionally, you can use whitelisting rather than blacklisting. To turn this on
-  alter this setting in the settings.php:
+  Optionally, you can use whitelisting rather than blacklisting. To turn this
+  on alter this setting in the settings.php:
   $conf['fast_404_url_whitelisting'] = FALSE;
 
   This setting requires you to do some serious testing to ensure your site's
@@ -60,72 +63,86 @@ Step 4. Enable the module in your modules page
 #4) Disallow imagecache file creation for anonymous users (NEW!)
 
   Normally the module skips out if imagecache is in the URL to the static file.
-  There are times when you may not want this (it would be pretty easy for someone
-  to take down your site by simply hammering you with URLs with imagecache in them.
+  There are times when you may not want this (it would be pretty easy for
+  someone to take down your site by simply hammering you with URLs with
+  imagecache in them.
 
-  In an ideal situation, your logged in users should have verified the pages are
-  loading correctly when they create them, so any needed imagecache images are
-  already made. This new setting will make it so that imagecache URLs are not
-  excluded and fall under the same static file rules as non-imagecache URLs. Set
-  to false to enable this new feature.
+  In an ideal situation, your logged in users should have verified the pages
+  are loading correctly when they create them, so any needed imagecache images
+  are already made. This new setting will make it so that imagecache URLs are
+  not excluded and fall under the same static file rules as non-imagecache
+  URLs. Set to false to enable this new feature.
 
   $conf['fast_404_allow_anon_imagecache'] = TRUE;
 
 
---- Copy the code below into the BOTTOM of your settings.php, unless you are using cacherouter. Put this above cacherouter ---
+-----------------------------------------------------------------
+--- Copy the code below into the BOTTOM of your settings.php. ---
+--- If you are using cacherouter, put this above cacherouter. ---
+-----------------------------------------------------------------
 
 /**
-* Fast 404 settings:
-* 
-* Fast 404 will do two seperate types of 404 checking. 
-* 
-* The first is to check for URLs which appear to be files or images. If Drupal 
-* is handling these items, then they were not found in the file system and are a 404.
-* 
-* The second is to check whether or not the URL exists in Drupal by checking with
-* the menu router, aliases and redirects. If the page does not exist, we will server a fast 404 error and exit.
-* 
-*/
+ * Fast 404 settings:
+ * 
+ * Fast 404 will do two separate types of 404 checking. 
+ * 
+ * The first is to check for URLs which appear to be files or images. If Drupal
+ * is handling these items, then they were not found in the file system and are
+ * a 404.
+ * 
+ * The second is to check whether or not the URL exists in Drupal by checking
+ * with the menu router, aliases and redirects. If the page does not exist, we
+ * will server a fast 404 error and exit.
+ */
 
-# Load the fast_404.inc file. This is needed if you wish to do extension checking in settings.php
+# Load the fast_404.inc file. This is needed if you wish to do extension
+# checking in settings.php.
 include_once('./sites/all/modules/fast_404/fast_404.inc');
 
-# Disallowed extensions. Any extension in here will not be served by Drupal and will get a fast 404
-# Default extension list, this is considered safe and is even in queue for Drupal 8 (see: http://drupal.org/node/76824)
+# Disallowed extensions. Any extension in here will not be served by Drupal and
+# will get a fast 404.
+# Default extension list, this is considered safe and is even in queue for
+# Drupal 8 (see: http://drupal.org/node/76824).
 $conf['fast_404_exts'] = '/\.(txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp)$/i';
 
-# Allow anonymous users to hit URLs containing 'imagecache' even if the file does not exist.
-# TRUE is default behavior. If you know all imagecache variations are already made
-# set this to FALSE.
+# Allow anonymous users to hit URLs containing 'imagecache' even if the file
+# does not exist. TRUE is default behavior. If you know all imagecache
+# variations are already made set this to FALSE.
 $conf['fast_404_allow_anon_imagecache'] = TRUE;
 
-# Extension list requiring whitelisting to be activated **If you use this without whitelisting enabled your site will not load!
+# Extension list requiring whitelisting to be activated **If you use this
+# without whitelisting enabled your site will not load!
 //$conf['fast_404_exts'] = '/\.(txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp|php|html?|xml)$/i';
 
 # Default fast 404 error message.
 $conf['fast_404_html'] = '<html xmlns="http://www.w3.org/1999/xhtml"><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL "@path" was not found on this server.</p></body></html>';
 
-# Check paths during bootstrap and see if they are legitimate
+# Check paths during bootstrap and see if they are legitimate.
 $conf['fast_404_path_check'] = FALSE;
 
-# If enabled, you may add extensions such as xml and php to the $conf['fast_404_exts'] above. 
-# BE CAREFUL with this setting as some modules use their own php files and you need to be certain 
-# they do not bootstrap Drupal. If they do, you will need to whitelist them too.
+# If enabled, you may add extensions such as xml and php to the
+# $conf['fast_404_exts'] above. BE CAREFUL with this setting as some modules
+# use their own php files and you need to be certain they do not bootstrap
+# Drupal. If they do, you will need to whitelist them too.
 $conf['fast_404_url_whitelisting'] = FALSE;
 
-# Array of whitelisted files/urls. Used if whitelisting is set to TRUE
+# Array of whitelisted files/urls. Used if whitelisting is set to TRUE.
 $conf['fast_404_whitelist'] = array('index.php', 'rss.xml', 'install.php', 'cron.php', 'update.php', 'xmlrpc.php');
 
 # Call the extension checking now. This will skip any logging of 404s.
-# Extension checking is safe to do from settings.php. There are many examples of this on Drupal.org.
+# Extension checking is safe to do from settings.php. There are many
+# examples of this on Drupal.org.
 //fast_404_ext_check();
 
-# Path checking. USE AT YOUR OWN RISK (only works with MySQL)
-# Path checking at this phase is more dangerous, but faster. Normally Fast_404 will check paths during Drupal
-# boostrap via hook_boot. Checking paths here is faster, but trickier as the Drupal database connections have not
-# yet been made and the module must make a separate DB connection. Under most configurations this DB connection will be
-# reused by Drupal so there is no waste.
-# While this setting finds 404s faster, it adds a bit more load time to regular pages, so only use
-# if you are spending too much CPU/Memory/DB on 404s and the trade-off is worth it.
+# Path checking. USE AT YOUR OWN RISK (only works with MySQL).
+# Path checking at this phase is more dangerous, but faster. Normally
+# Fast_404 will check paths during Drupal boostrap via hook_boot. Checking
+# paths here is faster, but trickier as the Drupal database connections have
+# not yet been made and the module must make a separate DB connection. Under
+# most configurations this DB connection will be reused by Drupal so there
+# is no waste.
+# While this setting finds 404s faster, it adds a bit more load time to
+# regular pages, so only use if you are spending too much CPU/Memory/DB on
+# 404s and the trade-off is worth it.
 # This setting will deliver 404s with less than 2MB of RAM.
 //fast_404_path_check();
