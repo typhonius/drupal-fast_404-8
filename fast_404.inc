@@ -105,7 +105,11 @@
     
     // Unable to work with multiple connections at present
     if (is_array($db_url)) {
-      return TRUE; // We can't check this URL here. Return TRUE to let Drupal continue bootstrapping.
+      if (isset($db_url['default'])) {
+        $db_url = $db_url['default'];
+      } else {
+        return TRUE; // We can't check this URL here. Return TRUE to let Drupal continue bootstrapping.
+      }
     }
     
     $sql = "SELECT path FROM menu_router WHERE '%s' LIKE CONCAT(path,'%')";
