@@ -16,7 +16,7 @@ function fast_404_ext_check() {
 
   // Check to see if the URL is an imagecache URL, those are handled via
   // Drupal.
-  if (strpos($_SERVER[$server_var], 'imagecache')) {
+  if (strpos($_SERVER[$server_var], 'styles')) {
 
     // Check to see if we will allow anon users to access this page.
     if (!variable_get('fast_404_allow_anon_imagecache', TRUE)) {
