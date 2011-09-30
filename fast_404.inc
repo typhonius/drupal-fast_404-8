@@ -124,8 +124,8 @@ function fast_404_validate_path_mysql() {
     return TRUE;
   }
 
-  $sql = "SELECT path FROM menu_router WHERE '%s' LIKE CONCAT(path, '%')";
-  $sql2 = "SELECT pid FROM url_alias WHERE '%s' LIKE CONCAT(alias, '%')";
+  $sql = "SELECT path FROM menu_router WHERE path = '%s' OR '%s' LIKE CONCAT(path, '/%')";
+  $sql2 = "SELECT pid FROM url_alias WHERE alias = '%s' OR '%s' LIKE CONCAT(alias, '/%')";
   $sql3 = "SELECT rid FROM path_redirect WHERE '%s' LIKE source";
 
   $db = $databases['default']['default'];
