@@ -70,7 +70,7 @@ function fast_404_ext_check() {
 function fast_404_path_check() {
   $valid = TRUE;
 
-  if (variable_get('fast_404_path_check', FALSE) && isset($_GET['q'])) {
+  if (variable_get('fast_404_path_check', FALSE) && !empty($_GET['q'])) {
 
     // Determine if we have the db_query function. If so, we are in boot and
     // have functions. If not we are in settings.php and do not have functions.
