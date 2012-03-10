@@ -1,6 +1,7 @@
 <?php
 
 function fast_404_ext_check() {
+  
   // Work out which $_SERVER variable to work from.  We'll ignore calls to the
   // homepage, to avoid unnecessary processing.
   if (!empty($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != '/' && $_SERVER['QUERY_STRING'] != '/index.php') {
@@ -52,6 +53,15 @@ function fast_404_ext_check() {
     if (in_array($_SERVER[$server_var], $allowed)) {
       // URL is whitelisted. Assumed good.
       return TRUE;
+    }
+  }
+
+  // Check for whitelisted strings in the URL
+  if (is_array(variable_get('fast_404_string_whitelisting', FALSE))) {
+    foreach (variable_get('fast_404_string_whitelisting', array()) as $str) {
+      if (strstr($_SERVER[$server_var], $str) !== FALSE ) {
+        return TRUE;
+      }
     }
   }
 

@@ -75,6 +75,20 @@ Step 4. Enable the module in your modules page
 
   $conf['fast_404_allow_anon_imagecache'] = TRUE;
 
+#5) Prevent conflicts with other modules (NEW!)
+
+  Some performance modules create paths to files which don't exist on disk.
+  These modules conflict with fast_404.  To workaround this limitation, you
+  can whitelist the URL fragments used by these modules.
+
+  For example if you are using the CDN module and have the far future date
+  feature enabled add the following configuration:
+
+  $conf['fast_404_string_whitelisting'] = array('cdn/farfuture');
+
+  If you are using AdvAgg you can use this:
+  $conf['fast_404_string_whitelisting'] = array('/advagg_');
+
 
 -----------------------------------------------------------------
 --- Copy the code below into the BOTTOM of your settings.php. ---
@@ -128,6 +142,9 @@ $conf['fast_404_url_whitelisting'] = FALSE;
 
 # Array of whitelisted files/urls. Used if whitelisting is set to TRUE.
 $conf['fast_404_whitelist'] = array('index.php', 'rss.xml', 'install.php', 'cron.php', 'update.php', 'xmlrpc.php');
+
+# Array of whitelisted URL fragment strings that conflict with fast_404.
+$conf['fast_404_string_whitelisting'] = array('cdn/farfuture', '/advagg_');
 
 # Call the extension checking now. This will skip any logging of 404s.
 # Extension checking is safe to do from settings.php. There are many
