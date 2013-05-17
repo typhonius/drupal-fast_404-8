@@ -66,7 +66,7 @@ function fast_404_ext_check() {
   }
 
   // Load up the blacklisted extensions.
-  $exts = variable_get('fast_404_exts', '/\.(txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp|)$/i');
+  $exts = variable_get('fast_404_exts', '/\.(txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp)$/i');
 
   // Determine if URL is in blacklisted extensions.
   if ($exts && preg_match($exts, $_SERVER[$server_var], $m)) {
