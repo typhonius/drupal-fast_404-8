@@ -115,15 +115,34 @@ function fast_404_validate_path_drupal() {
       return TRUE;
     }
   }
+  
+  $q = $_GET['q'];
+ 
+  // Act only when locale is enabled  
+  $locale = db_query("SELECT status FROM {system} WHERE name='locale'")->fetchObject();
+
+  // TODO: Need to actually check if url negotiator is enabled 
+  if ($locale && $locale->status == 1) {
+    $prefixes = db_query("SELECT prefix FROM {languages} WHERE enabled = 1 AND prefix != ''");
+    $lang_prefixes = $prefixes->fetchCol();
+  
+    $path_parts = explode('/', $q);
+    if (in_array($path_parts[0], $lang_prefixes)) {
+      if (count($path_parts) == 1) {
+        return TRUE;
+      }
+      $q = substr($q, strlen($path_parts[0]) + 1);
+    }
+  }  
 
   $sql = "SELECT path FROM {menu_router} WHERE ? LIKE CONCAT(path, '%')";
-  $res = db_query($sql, array($_GET['q']))->fetchField();
+  $res = db_query($sql, array($q))->fetchField();
   if ($res) {
     return TRUE;
   }
   else {
     $sql = "SELECT pid FROM {url_alias} WHERE ? LIKE CONCAT(alias, '%')";
-    $res = db_query($sql, array($_GET['q']))->fetchField();
+    $res = db_query($sql, array($q))->fetchField();
     return $res == 0 ? FALSE : TRUE;
   }
 
@@ -156,20 +175,40 @@ function fast_404_validate_path_mysql() {
   if ($databases['default']['default']['driver'] == 'mysqli') {
     $conn = mysqli_connect($db['host'], $db['username'], $db['password'], $db['database'], $db['port']);
 
+    $q = $_GET['q'];
+    // Act only when locale is enabled
+    $res = mysqli_query($conn, "SELECT status FROM system WHERE name='locale'");
+    $locale = mysqli_fetch_object($res);
+    // TODO: Need to actually check if url negotiator is enabled
+    if ($locale && $locale->status == 1) {
+      $res = mysqli_query($conn, "SELECT prefix FROM languages WHERE enabled = 1 AND prefix != ''");
+      $lang_prefixes = array();
+      while($item = mysqli_fetch_object($res)) {
+        $lang_prefixes[] = $item->prefix;
+      }
+      $path_parts = explode('/', $q);
+      if (in_array($path_parts[0], $lang_prefixes)) {
+        if (count($path_parts) == 1) {
+          return TRUE;
+        }
+        $q = substr($q, strlen($path_parts[0]) + 1);
+      }
+    }
+    
     // Check if path_redirect module is installed.
     if (mysqli_fetch_row(mysqli_query($conn, "SELECT name FROM system WHERE type = 'module' AND status = 1 AND name = 'path_redirect'"))) {
       // Check if path exits in path_redirect table.
-      $sql3 = str_replace('%s', mysqli_real_escape_string($conn, $_GET['q']), $sql3);
+      $sql3 = str_replace('%s', mysqli_real_escape_string($conn, $q), $sql3);
       if (mysqli_fetch_row(mysqli_query($conn, $sql3))) {
         return TRUE;
       }
     }
 
-    $sql = str_replace('%s', mysqli_real_escape_string($conn, $_GET['q']), $sql);
+    $sql = str_replace('%s', mysqli_real_escape_string($conn, $q), $sql);
     $res = mysqli_query($conn, $sql);
     $row = mysqli_fetch_row($res);
     if (!is_array($row)) {
-      $sql2 = str_replace('%s', mysqli_real_escape_string($conn, $_GET['q']), $sql2);
+      $sql2 = str_replace('%s', mysqli_real_escape_string($conn, $q), $sql2);
       $res = mysqli_query($conn, $sql2);
       $row = mysqli_fetch_row($res);
       return is_array($row) > 0 ? TRUE : FALSE;
