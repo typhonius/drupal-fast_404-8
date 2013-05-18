@@ -117,7 +117,11 @@ include_once('./sites/all/modules/fast_404/fast_404.inc');
 # will get a fast 404.
 # Default extension list, this is considered safe and is even in queue for
 # Drupal 8 (see: http://drupal.org/node/76824).
-$conf['fast_404_exts'] = '/[^robots]\.(txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp)$/i';
+$conf['fast_404_exts'] = '/^(?!robots).*\.(txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp)$/i';
+
+# If you use a private file system use the conf variable below and change the 
+# 'sites/default/private' to your actual private files path
+# $conf['fast_404_exts'] = '/^(?!robots)^(?!sites/default/private).*\.(txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp)$/i';
 
 # Allow anonymous users to hit URLs containing 'imagecache' even if the file
 # does not exist. TRUE is default behavior. If you know all imagecache
