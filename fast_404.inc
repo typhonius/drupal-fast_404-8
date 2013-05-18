@@ -269,7 +269,7 @@ function fast_404_error_return($load_html = FALSE) {
   
   // If we don't have fast 404 html yet, use the default
   if (!isset($fast_404_html) || empty($fast_404_html)) {
-    $fast_404_html = variable_get('fast_404_html', '<html xmlns="http://www.w3.org/1999/xhtml"><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL "@path" was not found on this server.</p></body></html>');
+    $fast_404_html = variable_get('fast_404_html', '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL "@path" was not found on this server.</p></body></html>');
   }
   print strtr($fast_404_html, array('@path' => check_plain(request_uri())));
   exit();
