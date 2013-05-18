@@ -172,8 +172,15 @@ function fast_404_validate_path_mysql() {
   $db = $databases['default']['default'];
 
   // Query the database via either mysql or mysqli.
-  if ($databases['default']['default']['driver'] == 'mysqli') {
-    $conn = mysqli_connect($db['host'], $db['username'], $db['password'], $db['database'], $db['port']);
+  if ($databases['default']['default']['driver'] == 'mysql') {
+    
+    // mysqli_connect() fails if port is an empty string. Force the default
+    // mysql port if $db['port'] is empty.
+    if (empty($db['port'])) {
+      $db['port'] = 3306;
+    }
+
+   $conn = mysqli_connect($db['host'], $db['username'], $db['password'], $db['database'], $db['port']);
 
     $q = $_GET['q'];
     // Act only when locale is enabled
@@ -211,35 +218,6 @@ function fast_404_validate_path_mysql() {
       $sql2 = str_replace('%s', mysqli_real_escape_string($conn, $q), $sql2);
       $res = mysqli_query($conn, $sql2);
       $row = mysqli_fetch_row($res);
-      return is_array($row) > 0 ? TRUE : FALSE;
-    }
-    else {
-      return TRUE;
-    }
-  }
-  elseif ($databases['default']['default']['driver'] == 'mysql') {
-    if (isset($db['port'])) {
-      $db['host'] = $db['host'] . ':' . $db['port'];
-    }
-    $conn = mysql_connect($db['host'], $db['username'], $db['password']);
-    mysql_select_db($db['database'], $conn);
-
-    // Check if redirect module is installed.
-    if (mysql_fetch_row(mysql_query($conn, "SELECT name FROM system WHERE type = 'module' AND status = 1 AND name = 'redirect'"))) {
-      // Check if path exits in redirect table.
-      $sql3 = str_replace('%s', mysql_escape_string($_GET['q']), $sql3);
-      if (mysql_fetch_row(mysql_query($sql3))) {
-        return TRUE;
-      }
-    }
-
-    $sql = str_replace('%s', mysql_escape_string($_GET['q']), $sql);
-    $res = mysql_query($sql);
-    $row = mysql_fetch_array($res);
-    if (!is_array($row)) {
-      $sql2 = str_replace('%s', mysql_escape_string($_GET['q']), $sql2);
-      $res = mysql_query($sql2);
-      $row = mysql_fetch_array($res);
       return is_array($row) > 0 ? TRUE : FALSE;
     }
     else {
