@@ -134,6 +134,10 @@ $conf['fast_404_exts'] = '/^(?!robots).*\.(txt|png|gif|jpe?g|css|js|ico|swf|flv|
 # variations are already made set this to FALSE.
 $conf['fast_404_allow_anon_imagecache'] = TRUE;
 
+# If you use FastCGI, uncomment this line to send the type of header it needs.
+# Reference: http://php.net/manual/en/function.header.php
+# $conf['fast_404_HTTP_status_method'] = 'FastCGI';
+
 # Extension list requiring whitelisting to be activated **If you use this
 # without whitelisting enabled your site will not load!
 //$conf['fast_404_exts'] = '/\.(txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp|php|html?|xml)$/i';

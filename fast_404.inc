@@ -238,9 +238,9 @@ function fast_404_error_return($load_html = FALSE, $return_gone = FALSE) {
   // Gone informs good net citizens not to come back because this resource
   // will not reappear on the server.
   if ($return_gone){
-    header('HTTP/1.0 410 Gone');
+    header((variable_get('fast_404_HTTP_status_method', 'mod_php') == 'FastCGI' ? 'Status:' : 'HTTP/1.0') . ' 410 Gone');
   } else {
-    header('HTTP/1.0 404 Not Found');
+    header((variable_get('fast_404_HTTP_status_method', 'mod_php') == 'FastCGI' ? 'Status:' : 'HTTP/1.0') . ' 404 Not Found');
   }
   
   // If a file is set to provide us with fast_404 joy, load it
