@@ -123,6 +123,12 @@ $conf['fast_404_exts'] = '/^(?!robots).*\.(txt|png|gif|jpe?g|css|js|ico|swf|flv|
 # 'sites/default/private' to your actual private files path
 # $conf['fast_404_exts'] = '/^(?!robots)^(?!sites/default/private).*\.(txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp)$/i';
 
+# If you would prefer a stronger version of NO then return a 410 instead of a
+# 404. This informs clients that not only is the resource currently not present
+# but that it is not coming back and kindly do not ask again for it.
+# Reference: http://en.wikipedia.org/wiki/List_of_HTTP_status_codes
+# $conf['fast_404_return_gone'] = TRUE;
+
 # Allow anonymous users to hit URLs containing 'imagecache' even if the file
 # does not exist. TRUE is default behavior. If you know all imagecache
 # variations are already made set this to FALSE.

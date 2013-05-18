@@ -15,7 +15,7 @@ function fast_404_ext_check() {
 
   // Check to see if the URL is an imagecache URL, those are handled via
   // Drupal.
-  if (strpos($path, 'styles')) {
+  if (strpos($path, 'styles/')) {
 
     // Check to see if we will allow anon users to access this page.
     if (!variable_get('fast_404_allow_anon_imagecache', TRUE)) {
@@ -68,7 +68,7 @@ function fast_404_ext_check() {
 
   // Determine if URL is in blacklisted extensions.
   if ($exts && preg_match($exts, $path, $m)) {
-    fast_404_error_return();
+    fast_404_error_return(FALSE, variable_get('fast_404_return_gone', FALSE));
   }
 
   define('FAST_404_EXT_CHECKED', TRUE);
@@ -93,7 +93,7 @@ function fast_404_path_check() {
   }
 
   if (!$valid) {
-    fast_404_error_return(TRUE);
+    fast_404_error_return(TRUE, variable_get('fast_404_return_gone', FALSE));
   }
 
   define('FAST_404_PATH_CHECKED', TRUE);
@@ -233,8 +233,15 @@ function fast_404_validate_path_mysql() {
 /**
  * Output our super plain error and exit
  */
-function fast_404_error_return($load_html = FALSE) {
-  header('HTTP/1.0 404 Not Found');
+function fast_404_error_return($load_html = FALSE, $return_gone = FALSE) {
+
+  // Gone informs good net citizens not to come back because this resource
+  // will not reappear on the server.
+  if ($return_gone){
+    header('HTTP/1.0 410 Gone');
+  } else {
+    header('HTTP/1.0 404 Not Found');
+  }
   
   // If a file is set to provide us with fast_404 joy, load it
   if (($load_html || variable_get('fast_404_HTML_error_all_paths', FALSE)) 
