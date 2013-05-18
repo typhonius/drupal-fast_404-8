@@ -108,10 +108,10 @@ function fast_404_path_check() {
  */
 function fast_404_validate_path_drupal() {
 
-  // Check if path_redirect module is installed.
-  if (db_query("SELECT name FROM {system} WHERE type = 'module' AND status = 1 AND name = 'path_redirect'")->fetchField()) {
-    // Check if path exits in path_redirect table.
-    if (db_query("SELECT rid FROM {path_redirect} WHERE ? LIKE source", array($_GET['q']))->fetchField()) {
+  // Check if redirect module is installed.
+  if (db_query("SELECT name FROM {system} WHERE type = 'module' AND status = 1 AND name = 'redirect'")->fetchField()) {
+    // Check if path exits in redirect table.
+    if (db_query("SELECT rid FROM {redirect} WHERE ? LIKE source", array($_GET['q']))->fetchField()) {
       return TRUE;
     }
   }
@@ -167,7 +167,7 @@ function fast_404_validate_path_mysql() {
 
   $sql = "SELECT path FROM menu_router WHERE path = '%s' OR '%s' LIKE CONCAT(path, '/%')";
   $sql2 = "SELECT pid FROM url_alias WHERE alias = '%s' OR '%s' LIKE CONCAT(alias, '/%')";
-  $sql3 = "SELECT rid FROM path_redirect WHERE '%s' LIKE source";
+  $sql3 = "SELECT rid FROM redirect WHERE '%s' LIKE source";
 
   $db = $databases['default']['default'];
 
@@ -195,9 +195,9 @@ function fast_404_validate_path_mysql() {
       }
     }
     
-    // Check if path_redirect module is installed.
-    if (mysqli_fetch_row(mysqli_query($conn, "SELECT name FROM system WHERE type = 'module' AND status = 1 AND name = 'path_redirect'"))) {
-      // Check if path exits in path_redirect table.
+    // Check if redirect module is installed.
+    if (mysqli_fetch_row(mysqli_query($conn, "SELECT name FROM system WHERE type = 'module' AND status = 1 AND name = 'redirect'"))) {
+      // Check if path exits in redirect table.
       $sql3 = str_replace('%s', mysqli_real_escape_string($conn, $q), $sql3);
       if (mysqli_fetch_row(mysqli_query($conn, $sql3))) {
         return TRUE;
@@ -224,9 +224,9 @@ function fast_404_validate_path_mysql() {
     $conn = mysql_connect($db['host'], $db['username'], $db['password']);
     mysql_select_db($db['database'], $conn);
 
-    // Check if path_redirect module is installed.
-    if (mysql_fetch_row(mysql_query($conn, "SELECT name FROM system WHERE type = 'module' AND status = 1 AND name = 'path_redirect'"))) {
-      // Check if path exits in path_redirect table.
+    // Check if redirect module is installed.
+    if (mysql_fetch_row(mysql_query($conn, "SELECT name FROM system WHERE type = 'module' AND status = 1 AND name = 'redirect'"))) {
+      // Check if path exits in redirect table.
       $sql3 = str_replace('%s', mysql_escape_string($_GET['q']), $sql3);
       if (mysql_fetch_row(mysql_query($sql3))) {
         return TRUE;
