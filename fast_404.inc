@@ -139,8 +139,7 @@ function fast_404_validate_path_drupal() {
     return TRUE;
   }
   else {
-    $sql = "SELECT pid FROM {url_alias} WHERE ? LIKE CONCAT(alias, '%')";
-    $res = db_query($sql, array($q))->fetchField();
+    $res = db_query("SELECT pid FROM {url_alias} WHERE alias = :alias", array(':alias' => $_GET['q']))->fetchField();
     return $res == 0 ? FALSE : TRUE;
   }
 
@@ -164,7 +163,7 @@ function fast_404_validate_path_mysql() {
   }
 
   $sql = "SELECT path FROM menu_router WHERE path = '%s' OR '%s' LIKE CONCAT(path, '/%')";
-  $sql2 = "SELECT pid FROM url_alias WHERE alias = '%s' OR '%s' LIKE CONCAT(alias, '/%')";
+  $sql2 = "SELECT pid FROM url_alias WHERE alias = '%s'";
   $sql3 = "SELECT rid FROM redirect WHERE '%s' LIKE source";
 
   $db = $databases['default']['default'];
