@@ -109,7 +109,7 @@ function fast_404_validate_path_drupal() {
   // Check if redirect module is installed.
   if (db_query("SELECT name FROM {system} WHERE type = 'module' AND status = 1 AND name = 'redirect'")->fetchField()) {
     // Check if path exits in redirect table.
-    if (db_query("SELECT rid FROM {redirect} WHERE ? LIKE source", array($_GET['q']))->fetchField()) {
+    if (db_query("SELECT rid FROM {redirect} WHERE ? = source", array($_GET['q']))->fetchField()) {
       return TRUE;
     }
   }
@@ -117,10 +117,8 @@ function fast_404_validate_path_drupal() {
   $q = $_GET['q'];
  
   // Act only when locale is enabled  
-  $locale = db_query("SELECT status FROM {system} WHERE name='locale'")->fetchObject();
-
   // TODO: Need to actually check if url negotiator is enabled 
-  if ($locale && $locale->status == 1) {
+  if (db_query("SELECT status FROM {system} WHERE type = 'module' AND name = 'locale' AND status = 1")->fetchField()) {
     $prefixes = db_query("SELECT prefix FROM {languages} WHERE enabled = 1 AND prefix != ''");
     $lang_prefixes = $prefixes->fetchCol();
   
