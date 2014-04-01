@@ -1,0 +1,5 @@
+services:
+  fast404.:
+    class: Drupal\fast404\EventSubscriber\Fast404EventSubscriber
+    tags:
+      - { name: event_subscriber }
