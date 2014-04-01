@@ -20,7 +20,7 @@ class Fast404EventSubscriber implements EventSubscriberInterface {
 
     $fast_404->extensionCheck();
 
-    $fast_404->patchCheck();
+    $fast_404->pathCheck();
 
 //    //require_once('fast404.inc');
 //
