@@ -14,13 +14,20 @@ class Fast404EventSubscriber implements EventSubscriberInterface {
 
   public function onKernelRequest(GetResponseEvent $event) {
     $this->event = $event;
-    drupal_set_message('fast 404 check');
 
-    $fast_404 = new Fast404;
+    $request = \Drupal::service('request'); //->query->get('q', '/');
 
+    $fast_404 = new Fast404($request);
     $fast_404->extensionCheck();
 
+    if ($fast_404->isPathblocked()) {
+      drupal_set_message('extension blocked');
+    }
     $fast_404->pathCheck();
+
+    if ($fast_404->isPathblocked()) {
+      drupal_set_message('path blocked');
+    }
 
 //    //require_once('fast404.inc');
 //
