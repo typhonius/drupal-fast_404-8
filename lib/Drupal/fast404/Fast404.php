@@ -4,6 +4,7 @@ namespace Drupal\fast404;
 use Drupal\Component\Utility\Settings;
 use Symfony\Component\HttpFoundation\Request;
 
+
 class Fast404 {
 
   public $extension_checked;
@@ -22,42 +23,39 @@ class Fast404 {
 
   public function extensionCheck() {
 
-    // Use the query string to determine the path.
-    $path = $this->request->query->get('q', '/');
+    // Get the path from the request.
+    $path = $this->request->getPathInfo();
 
     // Ignore calls to the homepage, to avoid unnecessary processing.
-    if ($path == '/') {
+    if (!isset($path) || $path == '/') {
       return;
     }
 
     // Check to see if the URL is an imagecache URL. If this file does not
     // already exist, it will be handled via Drupal.
     if (strpos($path, 'styles/')) {
-      // Check to see if we will allow anon users to access this page.
-//      if (!variable_get('fast_404_allow_anon_imagecache', TRUE)) {
-//        $found_session = FALSE;
-//
-//        // At this stage of the game we don't know if the user is logged in via
-//        // regular function calls. Simply look for a session cookie. If we find
-//        // one we'll assume they're logged in
-//        foreach ($_COOKIE as $k => $v) {
-//          if (stristr($k, 'SESS')) {
-//            $found_session = TRUE;
-//            break;
-//          }
-//        }
-//
-//        // Found a session. We're going to assume they're logged in.
-//        if ($found_session) {
-//          return TRUE;
-//        }
-//      }
 
-      // We're allowing anyone to hit non-existing imagecache URLs (default
-      // behavior).
-//      else {
-//        return TRUE;
-//      }
+      // Check to see if we will allow anon users to access this page.
+      if (!Settings::get('fast_404_allow_anon_imagecache', TRUE)) {
+        $cookies = $this->request->cookies->all();
+
+        // At this stage of the game we don't know if the user is logged in via
+        // regular function calls. Simply look for a session cookie. If we find
+        // one we'll assume they're logged in
+        if (isset($cookies) && is_array($cookies)) {
+          foreach ($cookies as $cookie) {
+            if (stristr($cookie, 'SESS')) {
+              return;
+            }
+          }
+        }
+      }
+    }
+
+    // We're allowing anyone to hit non-existing imagecache URLs (default
+    // behavior).
+    else {
+      return;
     }
 
     // If we are using URL whitelisting then determine if the current URL is
