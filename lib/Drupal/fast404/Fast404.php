@@ -50,12 +50,12 @@ class Fast404 {
           }
         }
       }
-    }
 
-    // We're allowing anyone to hit non-existing imagecache URLs (default
-    // behavior).
-    else {
-      return;
+      // We're allowing anyone to hit non-existing imagecache URLs (default
+      // behavior).
+      else {
+        return;
+      }
     }
 
     // If we are using URL whitelisting then determine if the current URL is
@@ -99,7 +99,7 @@ class Fast404 {
     $this->respond_404 = TRUE;
   }
 
-  public function isPathblocked() {
+  public function isPathBlocked() {
     return $this->respond_404;
   }
 }
