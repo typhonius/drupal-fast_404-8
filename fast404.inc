@@ -1,5 +1,10 @@
 <?php
 
+// It's likely that the settings.php include will need refactoring when the
+// number of bootstrap phases is reduced and the kernel utilised more fully.
+// https://drupal.org/node/2023495
+// https://drupal.org/node/2016629
+
 use Drupal\Component\Utility\Settings;
 use Symfony\Component\HttpFoundation\Request;
 

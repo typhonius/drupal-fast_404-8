@@ -103,7 +103,6 @@ class Fast404 {
     // If we have a database connection we can use it, otherwise we might be
     // initialising it.
 
-    // todo document that drupalkernel is after config atm but there is a d.o to make it before
     // We remove '/' from the list of possible patterns as it exists in the router
     // by default. This means that the query would match any path (/%) which is
     // undesireable when we're only looking to match some paths.
