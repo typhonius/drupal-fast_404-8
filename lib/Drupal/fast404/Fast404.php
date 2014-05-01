@@ -130,6 +130,9 @@ class Fast404 {
   }
 
   public function isPathBlocked() {
+    if (drupal_is_cli()) {
+      return FALSE;
+    }
     return $this->respond_404;
   }
 
